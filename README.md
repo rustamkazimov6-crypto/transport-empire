@@ -1,4 +1,3 @@
-[transport-empire-README.md](https://github.com/user-attachments/files/28033823/transport-empire-README.md)
 # transpoer-empire# Transport Empire
 
 A turn-based transport strategy game built in Java with JavaFX. Developed as a group project (team of 6) at ELTE over one semester.
