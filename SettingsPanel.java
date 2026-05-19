@@ -3,11 +3,11 @@ package com.transportgame.ui.panels;
 import javax.swing.*;
 import java.awt.*;
 
-public class NewGamePanel extends BackgroundPanel {
+public class SettingsPanel extends BackgroundPanel {
 
     private final GameWindow window;
 
-    public NewGamePanel(GameWindow window) {
+    public SettingsPanel(GameWindow window) {
         this.window = window;
         setLayout(new GridBagLayout());
 
@@ -26,12 +26,12 @@ public class NewGamePanel extends BackgroundPanel {
         ));
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
 
-        JLabel title = new JLabel("New Game");
+        JLabel title = new JLabel("Settings");
         title.setFont(new Font("Segoe UI", Font.BOLD, 28));
         title.setForeground(new Color(230, 230, 240));
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel desc = new JLabel("<html>Configure your transport company before starting the simulation.</html>");
+        JLabel desc = new JLabel("<html>Configure visual and gameplay preferences for your session.</html>");
         desc.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         desc.setForeground(new Color(190, 200, 215));
         desc.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -40,52 +40,53 @@ public class NewGamePanel extends BackgroundPanel {
         form.setOpaque(false);
         form.setAlignmentX(Component.LEFT_ALIGNMENT);
         GridBagConstraints fg = new GridBagConstraints();
-        fg.insets = new Insets(4, 0, 4, 0);
+        fg.insets = new Insets(6, 0, 6, 0);
         fg.gridx = 0;
         fg.gridy = 0;
         fg.anchor = GridBagConstraints.WEST;
 
-        JLabel nameLabel = new JLabel("Company name:");
-        nameLabel.setForeground(new Color(210, 215, 230));
-        JTextField nameField = new JTextField("My Transport Co.", 20);
+        JLabel volumeLabel = new JLabel("Master volume:");
+        volumeLabel.setForeground(new Color(210, 215, 230));
+        JSlider volumeSlider = new JSlider(0, 100, 65);
+        volumeSlider.setOpaque(false);
+        volumeSlider.setMajorTickSpacing(25);
+        volumeSlider.setPaintTicks(true);
 
-        JLabel mapLabel = new JLabel("Map size:");
-        mapLabel.setForeground(new Color(210, 215, 230));
-        String[] sizes = {"Small (64x64)", "Medium (96x96)", "Large (128x128)"};
-        JComboBox<String> mapSize = new JComboBox<>(sizes);
+        JLabel speedLabel = new JLabel("Simulation speed:");
+        speedLabel.setForeground(new Color(210, 215, 230));
+        String[] speeds = {"Slow", "Normal", "Fast"};
+        JComboBox<String> speedBox = new JComboBox<>(speeds);
+        speedBox.setSelectedIndex(1);
 
-        JLabel difficultyLabel = new JLabel("Difficulty:");
-        difficultyLabel.setForeground(new Color(210, 215, 230));
-        String[] diffs = {"Relaxed", "Balanced", "Challenging"};
-        JComboBox<String> difficulty = new JComboBox<>(diffs);
+        JCheckBox tutorials = new JCheckBox("Show tutorial hints on first runs");
+        tutorials.setForeground(new Color(210, 215, 230));
+        tutorials.setOpaque(false);
+        tutorials.setSelected(true);
 
         fg.gridx = 0;
         fg.weightx = 0;
-        form.add(nameLabel, fg);
+        form.add(volumeLabel, fg);
         fg.gridx = 1;
         fg.weightx = 1;
         fg.fill = GridBagConstraints.HORIZONTAL;
-        form.add(nameField, fg);
+        form.add(volumeSlider, fg);
 
         fg.gridy++;
         fg.gridx = 0;
         fg.weightx = 0;
         fg.fill = GridBagConstraints.NONE;
-        form.add(mapLabel, fg);
+        form.add(speedLabel, fg);
         fg.gridx = 1;
         fg.weightx = 1;
         fg.fill = GridBagConstraints.HORIZONTAL;
-        form.add(mapSize, fg);
+        form.add(speedBox, fg);
 
         fg.gridy++;
         fg.gridx = 0;
-        fg.weightx = 0;
-        fg.fill = GridBagConstraints.NONE;
-        form.add(difficultyLabel, fg);
-        fg.gridx = 1;
+        fg.gridwidth = 2;
         fg.weightx = 1;
         fg.fill = GridBagConstraints.HORIZONTAL;
-        form.add(difficulty, fg);
+        form.add(tutorials, fg);
 
         JPanel buttons = new JPanel();
         buttons.setOpaque(false);
@@ -93,16 +94,15 @@ public class NewGamePanel extends BackgroundPanel {
         buttons.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JButton back = new JButton("Back");
-        JButton start = new JButton("Start");
+        JButton apply = new JButton("Apply");
 
         styleSmallButton(back);
-        stylePrimaryButton(start);
+        stylePrimaryButton(apply);
 
         back.addActionListener(e -> window.showScreen("MAIN_MENU"));
-        start.addActionListener(e -> window.startNewGame(nameField.getText()));
 
         buttons.add(back);
-        buttons.add(start);
+        buttons.add(apply);
 
         card.add(title);
         card.add(Box.createVerticalStrut(4));

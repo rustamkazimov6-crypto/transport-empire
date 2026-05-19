@@ -1,172 +1,27 @@
 package com.transportgame.core;
 
-import com.transportgame.ui.panels.GamePanel.MapTileType;
-import org.junit.jupiter.api.Test;
+public class EconomyEngine {
 
-import java.awt.Point;
-import java.util.List;
+    public static final long HOUSE_INCOME         = 8L;
+    public static final long GARAGE_INCOME        = 3L;
+    public static final long STORAGE_INCOME       = 2L;
+    public static final long PASSENGER_RATE       = 15L;
+    public static final long CARGO_RATE           = 10L;
+    public static final long BANKRUPTCY_THRESHOLD = 100L;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class PathfinderTest {
-
-    private static final int SIZE = 20;
-
-    private MapTileType[][] emptyGrid() {
-        MapTileType[][] t = new MapTileType[SIZE][SIZE];
-        for (int r = 0; r < SIZE; r++)
-            for (int c = 0; c < SIZE; c++)
-                t[r][c] = MapTileType.EMPTY;
-        return t;
+    public static long calcPassengerPayment(int passengers) {
+        return passengers * PASSENGER_RATE;
     }
 
-    @Test
-    void roadTileIsTraversable() {
-        assertTrue(Pathfinder.isRoadTile(MapTileType.ROAD));
+    public static long calcCargoPayment(int cargo) {
+        return cargo * CARGO_RATE;
     }
 
-    @Test
-    void bridgeTileIsTraversable() {
-        assertTrue(Pathfinder.isRoadTile(MapTileType.BRIDGE));
+    public static long calcBuildingIncome(int houses, int garages, int storages) {
+        return houses * HOUSE_INCOME + garages * GARAGE_INCOME + storages * STORAGE_INCOME;
     }
 
-    @Test
-    void emptyTileIsNotTraversable() {
-        assertFalse(Pathfinder.isRoadTile(MapTileType.EMPTY));
-    }
-
-    @Test
-    void houseTileIsNotTraversable() {
-        assertFalse(Pathfinder.isRoadTile(MapTileType.HOUSE));
-    }
-
-    @Test
-    void nearestRoadReturnsSelfWhenOnRoad() {
-        MapTileType[][] t = emptyGrid();
-        t[5][5] = MapTileType.ROAD;
-
-        Point p = Pathfinder.findNearestRoad(t, SIZE, SIZE, 5, 5);
-        assertNotNull(p);
-        assertEquals(5, p.x);
-        assertEquals(5, p.y);
-    }
-
-    @Test
-    void nearestRoadFindsAdjacentRoad() {
-        MapTileType[][] t = emptyGrid();
-        t[5][6] = MapTileType.ROAD;
-
-        Point p = Pathfinder.findNearestRoad(t, SIZE, SIZE, 5, 5);
-        assertNotNull(p);
-        assertEquals(5, p.x);
-        assertEquals(6, p.y);
-    }
-
-    @Test
-    void nearestRoadFindsRoadWithinThreeTiles() {
-        MapTileType[][] t = emptyGrid();
-        t[5][8] = MapTileType.ROAD;
-
-        Point p = Pathfinder.findNearestRoad(t, SIZE, SIZE, 5, 5);
-        assertNotNull(p);
-    }
-
-    @Test
-    void nearestRoadReturnsNullWhenTooFar() {
-        MapTileType[][] t = emptyGrid();
-        t[5][9] = MapTileType.ROAD;
-
-        Point p = Pathfinder.findNearestRoad(t, SIZE, SIZE, 5, 5);
-        assertNull(p);
-    }
-
-    @Test
-    void straightHorizontalPath() {
-        MapTileType[][] t = emptyGrid();
-        for (int c = 3; c <= 8; c++) t[5][c] = MapTileType.ROAD;
-
-        List<Point> path = Pathfinder.findPath(t, SIZE, SIZE, 5, 3, 5, 8);
-
-        assertNotNull(path);
-        assertFalse(path.isEmpty());
-
-        assertEquals(new Point(5, 3), path.get(0));
-        assertEquals(new Point(5, 8), path.get(path.size() - 1));
-
-        assertEquals(6, path.size());
-    }
-
-    @Test
-    void lShapedPath() {
-        MapTileType[][] t = emptyGrid();
-
-        for (int c = 3; c <= 7; c++) t[5][c] = MapTileType.ROAD;
-
-        for (int r = 5; r <= 9; r++) t[r][7] = MapTileType.ROAD;
-
-        List<Point> path = Pathfinder.findPath(t, SIZE, SIZE, 5, 3, 9, 7);
-
-        assertNotNull(path);
-        assertEquals(new Point(5, 3), path.get(0));
-        assertEquals(new Point(9, 7), path.get(path.size() - 1));
-
-        assertEquals(9, path.size());
-    }
-
-    @Test
-    void returnsNullWhenNoRoadAtAll() {
-        MapTileType[][] t = emptyGrid();
-        List<Point> path = Pathfinder.findPath(t, SIZE, SIZE, 2, 2, 8, 8);
-        assertNull(path);
-    }
-
-    @Test
-    void returnsNullWhenRoadIsBlocked() {
-        MapTileType[][] t = emptyGrid();
-
-        for (int c = 2; c <= 4; c++) t[5][c] = MapTileType.ROAD;
-        for (int c = 6; c <= 8; c++) t[5][c] = MapTileType.ROAD;
-
-        List<Point> path = Pathfinder.findPath(t, SIZE, SIZE, 5, 2, 5, 8);
-        assertNull(path);
-    }
-
-    @Test
-    void pathBlockedAfterRoadRemoved() {
-        MapTileType[][] t = emptyGrid();
-        for (int c = 2; c <= 8; c++) t[5][c] = MapTileType.ROAD;
-
-        assertNotNull(Pathfinder.findPath(t, SIZE, SIZE, 5, 2, 5, 8));
-
-        t[5][5] = MapTileType.EMPTY;
-
-        assertNull(Pathfinder.findPath(t, SIZE, SIZE, 5, 2, 5, 8));
-    }
-
-    @Test
-    void bridgeTilesAreTraversed() {
-        MapTileType[][] t = emptyGrid();
-        t[5][3] = MapTileType.ROAD;
-        t[5][4] = MapTileType.BRIDGE;
-        t[5][5] = MapTileType.ROAD;
-
-        List<Point> path = Pathfinder.findPath(t, SIZE, SIZE, 5, 3, 5, 5);
-        assertNotNull(path);
-        assertEquals(3, path.size());
-    }
-
-    @Test
-    void multiStopRouteConnects() {
-
-        MapTileType[][] t = emptyGrid();
-        for (int c = 2; c <= 12; c++) t[5][c] = MapTileType.ROAD;
-
-        List<Point> ab = Pathfinder.findPath(t, SIZE, SIZE, 5, 2, 5, 7);
-        List<Point> bc = Pathfinder.findPath(t, SIZE, SIZE, 5, 7, 5, 12);
-
-        assertNotNull(ab);
-        assertNotNull(bc);
-
-        assertEquals(ab.get(ab.size() - 1), bc.get(0));
+    public static boolean isBankrupt(long cash) {
+        return cash < BANKRUPTCY_THRESHOLD;
     }
 }
