@@ -1,4 +1,4 @@
-# transpoer-empire# Transport Empire
+# transport-empire# Transport Empire
 
 A turn-based transport strategy game built in Java with JavaFX. Developed as a group project (team of 6) at ELTE over one semester.
 
